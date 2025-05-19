@@ -1,21 +1,42 @@
 import argparse
+import json
+import os
+import sys
+
+
+def read_json(file_path: str) -> dict | None:
+    """Wczytuje plik JSON i zwraca dane jako obiekt Pythona.
+    Gdy składnia jest niepoprawna – wypisuje błąd i zwraca None."""
+    try:
+        with open(file_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        print(" Plik JSON poprawny.")
+        return data
+    except FileNotFoundError:
+        print(f" Plik '{file_path}' nie istnieje.")
+    except json.JSONDecodeError as e:
+        print(f" Błąd składni JSON – {e.msg} (linia {e.lineno}, kolumna {e.colno})")
+    return None
+
 
 def main():
-    # 1. Tworzymy parser
-    parser = argparse.ArgumentParser(description="Przykład parsowania argumentów")
-
-    # 2. Dodajemy argumenty
-    parser.add_argument('--mode', type=str, help='Tryb działania programu')
-    parser.add_argument('--input', type=str, help='Plik wejściowy')
-    parser.add_argument('--verbose', action='store_true', help='Włącz tryb szczegółowy')
-
-    # 3. Parsujemy argumenty
+    parser = argparse.ArgumentParser(description="Konwerter plików (.json, .xml, .yml)")
+    parser.add_argument("source", help="Plik wejściowy (.json)")
+    parser.add_argument("target", help="Plik wyjściowy (np. wynik.yaml)")
     args = parser.parse_args()
 
-    # 4. Używamy ich w programie
-    print("Tryb działania:", args.mode)
-    print("Plik wejściowy:", args.input)
-    print("Tryb szczegółowy:", args.verbose)
+    print("Plik wejściowy:", args.source)
+    print("Plik wyjściowy:", args.target)
 
-if __name__ == '__main__':
+    ext = os.path.splitext(args.source)[1].lower()
+    if ext != ".json":
+        print("  Na tym etapie obsługiwane są tylko pliki .json")
+        sys.exit(1)
+
+    data = read_json(args.source)
+    if data is not None:
+        print(" Dane wczytane z JSON:", data)
+
+
+if __name__ == "__main__":
     main()
