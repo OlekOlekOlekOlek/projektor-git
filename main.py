@@ -2,7 +2,19 @@ import argparse
 import json
 import os
 import sys
+import yaml
 
+def read_yaml(file_path: str) -> dict | None:
+    try:
+        with open(file_path, "r", encoding="utf-8") as f:
+            data = yaml.safe_load(f)
+        print("Plik YAML poprawny.")
+        return data
+    except FileNotFoundError:
+        print(f" Plik '{file_path}' nie istnieje.")
+    except yaml.YAMLError as e:
+        print(f" Błąd składni YAML – {e}")
+    return None
 
 def read_json(file_path: str) -> dict | None:
     """Wczytuje plik JSON i zwraca dane jako obiekt Pythona.
@@ -39,11 +51,17 @@ def main():
     print("Plik wyjściowy:", args.target)
 
     ext = os.path.splitext(args.source)[1].lower()
-    if ext != ".json":
-        print("  Na tym etapie obsługiwane są tylko pliki .json")
-        sys.exit(1)
+    ext = os.path.splitext(args.source)[1].lower()
+
+    if ext == ".json":
+        data = read_json(args.source)
+    elif ext in [".yaml", ".yml"]:
+        data = read_yaml(args.source)
+    else:
+        print("Na tym etapie obsługiwane są tylko pliki .json i .yaml")
+    sys.exit(1)    
     
-        if os.path.splitext(args.target)[1].lower() != ".json":
+    if os.path.splitext(args.target)[1].lower() != ".json":
             print("  Na tym etapie plik wyjściowy musi mieć rozszerzenie .json")
             sys.exit(1)
 
