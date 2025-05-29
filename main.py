@@ -3,8 +3,19 @@ import json
 import os
 import sys
 import yaml
+import xml.etree.ElementTree as ET
 
-
+def read_xml(file_path: str) -> ET.Element | None:
+    try:
+        tree = ET.parse(file_path)  # próba sparsowania XML
+        root = tree.getroot()
+        print("Plik XML poprawny.")
+        return root
+    except FileNotFoundError:
+        print(f"Plik '{file_path}' nie istnieje.")
+    except ET.ParseError as e:
+        print(f"Błąd składni XML – {e}")
+    return None
 
 def read_yaml(file_path: str) -> dict | None:
     try:
@@ -70,9 +81,15 @@ def main():
         data = read_json(args.source)
     elif ext in [".yaml", ".yml"]:
         data = read_yaml(args.source)
+    elif ext == ".xml":
+        root = read_xml(args.source)
+        if root is None:
+            print("Nie udało się wczytać danych z XML.")
+            sys.exit(1)
+        data = {root.tag: {child.tag: child.text for child in root}}
     else:
-        print("Na tym etapie obsługiwane są tylko pliki .json i .yaml")
-        sys.exit(1)    
+        print("Obsługiwane wejścia to tylko .json, .yaml i .xml")
+        sys.exit(1)
     
     if data is None:
         print(" Nie udało się wczytać danych.")
