@@ -29,7 +29,7 @@ def dict_to_xml(tag: str, d) -> ET.Element:
 def write_xml(data: dict, file_path: str) -> bool:
     try:
         if len(data) != 1:
-            print("Dane do zapisu XML powinny mieć dokładnie jeden klucz - nazwę głównego elementu.")
+            print("Dane do zapisu XML powinny miec dokladnie jeden klucz - nazwe glownego elementu.")
             return False
         root_tag = list(data.keys())[0]
         root_elem = dict_to_xml(root_tag, data[root_tag])
@@ -39,7 +39,7 @@ def write_xml(data: dict, file_path: str) -> bool:
         print(f"Dane zapisane do pliku XML: {file_path}")
         return True
     except Exception as e:
-        print(f"Błąd zapisu XML: {e}")
+        print(f"Blad zapisu XML: {e}")
         return False
 
 def read_xml(file_path: str) -> ET.Element | None:
@@ -51,7 +51,7 @@ def read_xml(file_path: str) -> ET.Element | None:
     except FileNotFoundError:
         print(f"Plik '{file_path}' nie istnieje.")
     except ET.ParseError as e:
-        print(f"Błąd składni XML – {e}")
+        print(f"Blad składni XML – {e}")
     return None
 
 def read_yaml(file_path: str) -> dict | None:
@@ -63,7 +63,7 @@ def read_yaml(file_path: str) -> dict | None:
     except FileNotFoundError:
         print(f" Plik '{file_path}' nie istnieje.")
     except yaml.YAMLError as e:
-        print(f" Błąd składni YAML – {e}")
+        print(f" Bld składni YAML – {e}")
     return None
 
 def write_yaml(data: dict, file_path: str) -> bool:
@@ -73,7 +73,7 @@ def write_yaml(data: dict, file_path: str) -> bool:
         print(f" Dane zapisane do pliku YAML: {file_path}")
         return True
     except Exception as e:
-        print(f" Błąd zapisu YAML: {e}")
+        print(f" Blad zapisu YAML: {e}")
         return False
 
 
@@ -88,28 +88,27 @@ def read_json(file_path: str) -> dict | None:
     except FileNotFoundError:
         print(f" Plik '{file_path}' nie istnieje.")
     except json.JSONDecodeError as e:
-        print(f" Błąd składni JSON – {e.msg} (linia {e.lineno}, kolumna {e.colno})")
+        print(f" Blad skladni JSON – {e.msg} (linia {e.lineno}, kolumna {e.colno})")
     return None
 
 def write_json(data: dict, file_path: str) -> bool:
-    """Zapisuje obiekt Pythona do pliku JSON.  Zwraca True/False."""
     try:
         with open(file_path, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=2, ensure_ascii=False)
         print(f" Dane zapisane do {file_path}")
         return True
     except Exception as e:
-        print(f" Nie udało się zapisać pliku: {e}")
+        print(f" Nie udalo sie zapisac pliku: {e}")
     return False
 
 def main():
-    parser = argparse.ArgumentParser(description="Konwerter plików (.json, .xml, .yml)")
-    parser.add_argument("source", help="Plik wejściowy (.json)")
-    parser.add_argument("target", help="Plik wyjściowy (np. wynik.yaml)")
+    parser = argparse.ArgumentParser(description="Konwerter plikow (.json, .xml, .yml)")
+    parser.add_argument("source", help="Plik wejsciowy (.json)")
+    parser.add_argument("target", help="Plik wyjsciowy (np. wynik.yaml)")
     args = parser.parse_args()
 
-    print("Plik wejściowy:", args.source)
-    print("Plik wyjściowy:", args.target)
+    print("Plik wejsciowy:", args.source)
+    print("Plik wyjsciowy:", args.target)
 
     ext = os.path.splitext(args.source)[1].lower()
 
@@ -120,15 +119,15 @@ def main():
     elif ext == ".xml":
         root = read_xml(args.source)
         if root is None:
-            print("Nie udało się wczytać danych z XML.")
+            print("Nie udalwo się wczytac danych z XML.")
             sys.exit(1)
         data = {root.tag: {child.tag: child.text for child in root}}
     else:
-        print("Obsługiwane wejścia to tylko .json, .yaml i .xml")
+        print("Obslugiwane wejscia to tylko .json, .yaml i .xml")
         sys.exit(1)
     
     if data is None:
-        print(" Nie udało się wczytać danych.")
+        print(" Nie udalo sie wczytac danych.")
         sys.exit(1)
 
     ext_out = os.path.splitext(args.target)[1].lower()
@@ -141,7 +140,7 @@ def main():
         write_xml(data, args.target)
     
     else:
-        print("Obsługiwane wyjścia to tylko .json i .yaml")
+        print("Obslugiwane wyjścia to tylko .json i .yaml")
         sys.exit(1)
 
 if __name__ == "__main__":
