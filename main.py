@@ -4,6 +4,8 @@ import os
 import sys
 import yaml
 
+
+
 def read_yaml(file_path: str) -> dict | None:
     try:
         with open(file_path, "r", encoding="utf-8") as f:
@@ -16,9 +18,21 @@ def read_yaml(file_path: str) -> dict | None:
         print(f" Błąd składni YAML – {e}")
     return None
 
+def write_yaml(data: dict, file_path: str) -> bool:
+    """Zapisuje dane do pliku YAML."""
+    try:
+        with open(file_path, "w", encoding="utf-8") as f:
+            yaml.dump(data, f, allow_unicode=True, sort_keys=False)
+        print(f" Dane zapisane do pliku YAML: {file_path}")
+        return True
+    except Exception as e:
+        print(f" Błąd zapisu YAML: {e}")
+        return False
+
+
+
+
 def read_json(file_path: str) -> dict | None:
-    """Wczytuje plik JSON i zwraca dane jako obiekt Pythona.
-    Gdy składnia jest niepoprawna – wypisuje błąd i zwraca None."""
     try:
         with open(file_path, "r", encoding="utf-8") as f:
             data = json.load(f)
@@ -51,7 +65,6 @@ def main():
     print("Plik wyjściowy:", args.target)
 
     ext = os.path.splitext(args.source)[1].lower()
-    ext = os.path.splitext(args.source)[1].lower()
 
     if ext == ".json":
         data = read_json(args.source)
@@ -59,20 +72,21 @@ def main():
         data = read_yaml(args.source)
     else:
         print("Na tym etapie obsługiwane są tylko pliki .json i .yaml")
-    sys.exit(1)    
+        sys.exit(1)    
     
-    if os.path.splitext(args.target)[1].lower() != ".json":
-            print("  Na tym etapie plik wyjściowy musi mieć rozszerzenie .json")
-            sys.exit(1)
+    if data is None:
+        print(" Nie udało się wczytać danych.")
+        sys.exit(1)
 
+    ext_out = os.path.splitext(args.target)[1].lower()
 
-
-
-    data = read_json(args.source)
-    if data is not None:
-        print(" Dane wczytane z JSON:", data)
-
-    write_json(data, args.target)
+    if ext_out == ".json":
+        write_json(data, args.target)
+    elif ext_out in [".yaml", ".yml"]:
+        write_yaml(data, args.target)
+    else:
+        print("Obsługiwane wyjścia to tylko .json i .yaml")
+        sys.exit(1)
 
 if __name__ == "__main__":
     main()
