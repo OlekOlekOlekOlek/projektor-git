@@ -1,0 +1,32 @@
+name: Python Build & Test
+
+on:
+  push:
+    branches: [ Task* ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies (PowerShell script)
+      run: |
+        Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process
+        ./installResources.ps1
+      shell: pwsh
+
+    - name: Run test conversion JSON → YAML
+      run: |
+        python main.py test.json wynik.yaml
+      shell: pwsh
