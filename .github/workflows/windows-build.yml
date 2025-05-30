@@ -1,0 +1,49 @@
+name: build -EXE      
+
+on:
+  schedule:
+    - cron: '0 6 * * 1'
+
+  push:
+    branches: [ master ]
+
+
+  workflow_dispatch:
+
+jobs:
+  build-exe:
+
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process
+        ./installResources.ps1
+      shell: pwsh
+
+
+    - name: Smoke test
+      run: python main.py test.json smoke.yaml
+      shell: pwsh
+
+    - name: Build EXE
+      run: |
+        pyinstaller --onefile main.py
+      shell: pwsh
+
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: konwerter-exe
+        path: dist/main.exe
