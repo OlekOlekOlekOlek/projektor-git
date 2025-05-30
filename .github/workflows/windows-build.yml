@@ -5,7 +5,7 @@ on:
     - cron: '0 6 * * 1'
 
   push:
-    branches: [ master ]
+    branches: [ TaskActions ]
 
 
   workflow_dispatch:
